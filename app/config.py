@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     gemini_api_key: str = Field(..., env="GEMINI_API_KEY")
     
     # Telegram Settings (Flattened for easier env loading)
-    telegram_token: str = Field(..., env="TELEGRAM_TOKEN")
-    telegram_chat_id: str = Field(..., env="TELEGRAM_CHAT_ID")
+    telegram_token: Optional[str] = Field(None, env="TELEGRAM_TOKEN")
+    telegram_chat_id: Optional[str] = Field(None, env="TELEGRAM_CHAT_ID")
     
     # Brave Search API (Primary Intelligence Source)
     brave_api_key: str = Field(..., env="BRAVE_API_KEY")
