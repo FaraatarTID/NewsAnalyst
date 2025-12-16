@@ -81,6 +81,12 @@ class BraveSearchService:
         
         for result in web_results:
             try:
+                # FILTER: Explicitly exclude Wikipedia
+                url = result.get("url", "").lower()
+                hostname = result.get("meta_url", {}).get("hostname", "").lower()
+                if "wikipedia.org" in url or "wikipedia" in hostname:
+                    continue
+
                 article = NewsArticle(
                     title=result.get("title", "No Title"),
                     link=result.get("url", ""),
@@ -133,7 +139,7 @@ class BraveSearchService:
         async def search_with_limit(query: str):
             async with semaphore:
                 await asyncio.sleep(0.5)  # Rate limiting: 500ms between requests
-                return await self.search(query, count=5, freshness=freshness)
+                return await self.search(f"{query} -site:wikipedia.org", count=5, freshness=freshness)
         
         tasks = [search_with_limit(q) for q in queries[:10]]  # Limit total queries
         results = await asyncio.gather(*tasks, return_exceptions=True)

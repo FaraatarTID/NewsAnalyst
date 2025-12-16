@@ -8,7 +8,7 @@ from datetime import datetime, time, timedelta
 import pytz
 
 # Load environment variables
-load_dotenv()
+load_dotenv(override=True)
 
 # Setup logging
 logging.basicConfig(
@@ -123,6 +123,18 @@ async def run_bot():
     
     offset = 0
     async with aiohttp.ClientSession() as session:
+        # Check and delete webhook if it exists to allow polling
+        try:
+            async with session.get(f"{BASE_URL}/getWebhookInfo") as response:
+                if response.status == 200:
+                    webhook_info = await response.json()
+                    if webhook_info.get("result", {}).get("url"):
+                        logger.info("Found active webhook. Deleting to enable local polling...")
+                        await session.post(f"{BASE_URL}/deleteWebhook", json={"drop_pending_updates": False})
+                        logger.info("✅ Webhook deleted successfully.")
+        except Exception as e:
+            logger.warning(f"⚠️ Could not check/delete webhook: {e}")
+
         # First, clear all pending messages by getting updates without processing
         updates = await get_updates(session, offset=0)
         if updates and updates.get("ok"):

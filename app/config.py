@@ -51,9 +51,8 @@ class Settings(BaseSettings):
             "https://www.recyclingtoday.com/rss.xml",
             "https://resource-recycling.com/feed/",
             "https://www.waste360.com/rss.xml",
-            "https://english.alarabiya.net/rss.xml",
             "https://news.google.com/rss/search?q=tire+recycling+Middle+East&hl=en-US&gl=US&ceid=US:en",
-            "https://news.google.com/rss/search?q=waste+management+UAE+Saudi+Arabia&hl=en-US&gl=US&ceid=US:en"
+            "https://news.google.com/rss/search?q=waste+management+Middle+East&hl=en-US&gl=US&ceid=US:en"
         ],
         env="RSS_FEEDS"
     )
@@ -76,7 +75,7 @@ class Settings(BaseSettings):
     alert_on_competitor_move: bool = Field(True, env="ALERT_ON_COMPETITOR_MOVE")
     
     # AI Settings
-    ai_model: str = Field("gemini-2.0-flash", env="AI_MODEL")
+    ai_model: str = Field("gemini-flash-latest", env="AI_MODEL")
     ai_prompt_template: str = Field(
         """
         You are a market intelligence analyst specializing in social impact ventures in the recycling industry, 
@@ -115,9 +114,10 @@ class Settings(BaseSettings):
         [Rate importance for a PE fund manager focused on social impact recycling]
         
         IMPORTANT: 
-        - Use HTML tags: <b>text</b> for bold, <i>text</i> for italic
-        - Do NOT use Markdown (**text** or _text_)
-        - In hashtags, avoid underscores and special characters
+        - Use ONLY these HTML tags: <b>text</b>, <i>text</i>, <a href="...">text</a>
+        - Do NOT use: <br>, <p>, <div>, <span>, <table>, <ul>, <li>, <h1>..<h6>
+        - Use actual newlines for line breaks (do not use <br>)
+        - Use hyphens (-) or emojis for bullet points
         - Focus on actionable intelligence for investment decisions
         
         ---

@@ -15,6 +15,25 @@ An intelligent news analysis bot that collects, analyzes, and delivers business 
 
 ## Quick Start
 
+### Web Interface (Streamlit)
+
+For a visual, interactive experience, you can run the web interface:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+This will open the application in your browser where you can:
+
+- **Run Custom Analyses**: Enter specific topics (e.g., "Tire Recycling in Iran")
+- **View Real-time Progress**: Monitor each step of the intelligence collection
+- **Interact with Results**: Expand and read AI-generated summaries
+- **Track Statistics**: View processed article counts and priority scores
+
+### Telegram Bot
+
+For automated daily reporting and mobile access:
+
 ### Prerequisites
 
 - Python 3.10+
@@ -117,7 +136,6 @@ daily-news-analyst/
 │       └── telegram.py    # Telegram messaging
 ├── main.py                # Core analysis logic
 ├── run_local_bot.py       # Local bot runner
-├── delete_webhook.py      # Webhook management utility
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Your configuration (not in git)
 └── README.md              # This file
@@ -128,9 +146,8 @@ daily-news-analyst/
 ### Bot Not Responding
 
 1. Ensure the bot is running: `python run_local_bot.py`
-2. Check that no webhook is set: `python delete_webhook.py`
-3. Verify your `.env` file has correct API keys
-4. Check the terminal for error messages
+2. Verify your `.env` file has correct API keys
+3. Check the terminal for error messages
 
 ### No Results for Custom Topics
 
@@ -147,7 +164,6 @@ daily-news-analyst/
 ### Multiple Duplicate Messages
 
 - Stop the bot with `Ctrl+C`
-- Run: `python delete_webhook.py`
 - Restart: `python run_local_bot.py`
 
 ## Advanced Configuration
