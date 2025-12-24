@@ -8,7 +8,13 @@ from datetime import datetime, time, timedelta
 import pytz
 
 # Load environment variables
-load_dotenv(override=True)
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+load_dotenv(env_path, override=True)
+logger = logging.getLogger("LocalBot")
+key_preview = os.getenv("GEMINI_API_KEY", "")
+masked_key = f"...{key_preview[-4:]}" if key_preview else "NONE"
+logger.info(f"📍 Config Source: {env_path}")
+logger.info(f"🔑 Active API Key ends in: {masked_key}")
 
 # Setup logging
 logging.basicConfig(
@@ -80,6 +86,9 @@ async def process_update(session, update):
         # Run the analysis
         try:
             logger.info("🚀 Triggering analysis...")
+            # Reload environment and config before run
+            env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+            load_dotenv(env_path, override=True)
             await run_analysis(custom_topic=topic)
             logger.info("✅ Analysis complete.")
         except SystemExit:
@@ -111,6 +120,9 @@ async def scheduled_task():
         # Run the analysis
         logger.info("⏰ Scheduled time reached - running daily analysis...")
         try:
+            # Reload environment and config before run
+            env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+            load_dotenv(env_path, override=True)
             await run_analysis(custom_topic=None)
             logger.info("✅ Scheduled analysis complete.")
         except Exception as e:

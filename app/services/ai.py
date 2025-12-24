@@ -53,9 +53,26 @@ class AIService:
                 return result
 
             except Exception as e:
+                error_str = str(e)
                 logger.warning(f"⚠️ Gemini error (Attempt {attempt + 1}): {e}")
+                
+                # Default backoff
+                wait_time = self.settings.retry_delay * (attempt + 1)
+                
+                # Handle 429 Rate Limit specifically
+                if "429" in error_str or "quota" in error_str.lower():
+                    logger.warning("⏳ Rate limit hit. Cooling down...")
+                    # Extract wait time if available (e.g. "retry in 10.8s")
+                    import re
+                    match = re.search(r'retry in (\d+(\.\d+)?)s', error_str)
+                    if match:
+                         wait_time = float(match.group(1)) + 2  # Add buffer
+                    else:
+                         wait_time = 15 # Default long cooling for quota
+                
                 if attempt < self.settings.max_retries - 1:
-                    await asyncio.sleep(self.settings.retry_delay)
+                    logger.info(f"Waiting {wait_time:.1f}s before retry...")
+                    await asyncio.sleep(wait_time)
         
         logger.error(f"❌ Failed to analyze article: {article.title}")
         return None

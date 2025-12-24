@@ -118,11 +118,15 @@ async def main(custom_topic: str = None):
             logger.warning(f"⚠️ Jina Reader enrichment failed (continuing anyway): {e}")
 
     # 4. Analyze and Report
-    # Process articles concurrently with a semaphore to control concurrency
-    semaphore = asyncio.Semaphore(5)  # Limit to 5 concurrent tasks
+    # Free Tier Limit: 10 requests per minute (approx 1 per 6 seconds)
+    # We set concurrency to 1 and add a strict delay to ensure compliance
+    semaphore = asyncio.Semaphore(1) 
 
     async def process_article(index: int, article):
         async with semaphore:
+            # Enforce rate limiting (wait 10s before/after processing)
+            await asyncio.sleep(10) 
+            
             logger.info(f"📄 Processing {index}/{len(articles)}: {article.title[:60]}...")
             try:
                 analysis = await ai_service.analyze_article(article)
