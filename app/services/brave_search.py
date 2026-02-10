@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import logging
+import random
 from typing import List, Optional
 from app.models import NewsArticle
 from app.config import Settings
@@ -120,12 +121,16 @@ class BraveSearchService:
         # Build search queries combining keywords with target markets
         queries = []
         
-        # General industry queries
-        for keyword in self.settings.industry_keywords[:3]:  # Limit to top 3 keywords
+        # General industry queries (Randomly sample 3 keywords)
+        available_keywords = self.settings.industry_keywords
+        selected_keywords = random.sample(available_keywords, min(len(available_keywords), 3))
+        for keyword in selected_keywords: 
             queries.append(keyword)
         
-        # Regional queries
-        for market in self.settings.target_markets[:3]:  # Limit to top 3 markets
+        # Regional queries (Randomly sample 4 markets)
+        available_markets = self.settings.target_markets
+        selected_markets = random.sample(available_markets, min(len(available_markets), 4))
+        for market in selected_markets:
             queries.append(f"recycling {market}")
             queries.append(f"waste management {market}")
         
@@ -141,7 +146,7 @@ class BraveSearchService:
                 await asyncio.sleep(0.5)  # Rate limiting: 500ms between requests
                 return await self.search(f"{query} -site:wikipedia.org", count=5, freshness=freshness)
         
-        tasks = [search_with_limit(q) for q in queries[:10]]  # Limit total queries
+        tasks = [search_with_limit(q) for q in queries[:15]]  # Limit total queries to 15 (was 10)
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
         # Aggregate results
